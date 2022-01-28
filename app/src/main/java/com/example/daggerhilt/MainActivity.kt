@@ -3,7 +3,10 @@ package com.example.daggerhilt
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
+import dagger.Module
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,18 +22,25 @@ class MainActivity : AppCompatActivity() {
         someClass.showMe()
     }
 }
-@AndroidEntryPoint
-class MyFragment: Fragment(){
 
-    @Inject
-    lateinit var someOtherClass : SomeOtherClass
+class SomeClass @Inject constructor(
+    private val someInterface: SomeInterface,
+    private val gson: Gson
+    ) {
+    fun showMe() = "I was instantiated with success, "
 }
 
-class SomeClass @Inject constructor(){
-    fun showMe() = "I was instantiated with success"
+interface SomeInterface {
+    fun getAThing(): String
 }
 
-@FragmentScoped
-class SomeOtherClass @Inject constructor(private val someClass: SomeClass){
-    fun showMe() = "I was instantiated with construct arg ${someClass.showMe()}"
+class SomeInterfaceImpl @Inject constructor(fakeDependency: FakeDependency) : SomeInterface {
+    override fun getAThing(): String {
+        return "Delivering a thing"
+    }
 }
+
+class FakeDependency{}
+
+
+
